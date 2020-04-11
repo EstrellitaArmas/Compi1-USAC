@@ -1,0 +1,56 @@
+package Proyecto1;
+
+import java.io.*;
+import java_cup.runtime.*;
+import java_cup.runtime.Symbol;
+
+
+parser code
+{: //METODOS DEL PARSER// 
+
+public Hashtable<String,Simbolo3> Tsimbolos3 =new Hashtable<String,Simbolo3>(); 
+public int key =1;           
+      public static void main(String args[]) throws Exception{
+		 new parser(new analizador3(new FileInputStream(args[0]))).parse();
+		new parser(new analizador3(System.in)).parse();
+	}
+	public void syntax_error(Symbol s){
+		report_error("Error de sintaxis. Linea: " + (s.right + 1) +
+		" Columna: " + s.left + ". Texto: \"" + s.value + "\"", null);
+	}
+:}
+
+terminal   String menorq, escenario, nombre ,igual, id ,pcoma, orden ,num ,slash, mayorq , escenarios,cescenarios ;
+
+
+non terminal    S, ESCENARIO;
+
+start with S;
+
+S::= escenarios ESCENARIO cescenarios
+;
+ESCENARIO::= menorq escenario nombre igual id:val1 pcoma orden igual num:val2 pcoma slash mayorq ESCENARIO
+              {: 
+               Simbolo3 nuevo = new Simbolo3();
+               nuevo.setId(Integer.toString(key));
+               nuevo.setNombre(val1);
+               nuevo.setOrden(val2);
+               Tsimbolos3.put("1",nuevo);
+               key++;
+               System.out.println(Tsimbolos3.get("1").getId()+Tsimbolos3.get("1").getNombre()+Tsimbolos3.get("1").getOrden());
+            
+            :}
+            | menorq escenario nombre igual id:val1 pcoma orden igual num:val2 pcoma slash mayorq
+            {: 
+               Simbolo3 nuevo = new Simbolo3();
+               nuevo.setId(Integer.toString(key));
+               nuevo.setNombre(val1);
+               nuevo.setOrden(val2);
+               Tsimbolos3.put("2",nuevo);
+               key++;
+             System.out.println(Tsimbolos3.get("2").getId()+Tsimbolos3.get("2").getNombre()+Tsimbolos3.get("2").getOrden());
+            :}
+;
+
+
+

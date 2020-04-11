@@ -1,0 +1,111 @@
+package Proyecto1;
+
+import java.io.*;
+import java_cup.runtime.*;
+import java_cup.runtime.Symbol;
+import java.util.Hashtable;
+
+parser code
+{: //METODOS DEL PARSER//            
+      public static void main(String args[]) throws Exception{
+		// new parser(new analizador2(new FileInputStream(args[0]))).parse();
+		new parser(new analizador2(System.in)).parse();
+	}
+	public void syntax_error(Symbol s){
+		report_error("Error de sintaxis. Linea: " + (s.right + 1) +
+		" Columna: " + s.left + ". Texto: \"" + s.value + "\"", null);
+	}
+public static Hashtable<String,SimboloPosiciones> Tsimbolos2 =new Hashtable<String,SimboloPosiciones>(); 
+public int key2 =1;  
+public int keyE =1;
+public static Hashtable<String,SimboloE> TsimbolosE =new Hashtable<String,SimboloE>(); 
+
+
+:}
+
+////SIMBOLOS TERMINALES/////////////////////////////////
+terminal     menorq, ancho , fondo,alto, mayorq, coma, pcoma, igual, pder, pizq,rp;
+terminal     nombre, escenario,cescenario,cpersonajes, personajes;
+terminal     paredes,cparedes, csuelo, suelo, cextras, extras,cmeta, meta;
+terminal     heroes,cheroes, cvillanos, villanos, carmas, armas , cbonus, bonus ;
+terminal     String num,id ;
+///SIMBOLOS NO TERMINALES////////////////////////////////
+non terminal    S, POSICIONES ;
+non terminal    ESCENARIO,ESCENARIOS,P1,P2,P3,ESC,POS ;
+
+
+start with S;
+
+S::= ESCENARIOS S
+   | ESCENARIOS
+;
+ESCENARIOS::= menorq escenario nombre igual id:val1 pcoma fondo igual id:val2 pcoma ancho igual num:val3 pcoma alto igual num:val4 mayorq  ESC  cescenario
+    {:         
+               SimboloE nuevo = new SimboloE();
+               nuevo.setId(Integer.toString(keyE));
+               nuevo.setNombre(val1);
+               nuevo.setfondo(val2);
+               nuevo.setancho(val3);
+               nuevo.setalto(val4);
+               TsimbolosE.put("1",nuevo);
+               keyE++;
+               System.out.println(TsimbolosE.get("1").getId()+TsimbolosE.get("1").getNombre()+TsimbolosE.get("1").getfondo()+ TsimbolosE.get("1").getancho()+TsimbolosE.get("1").getalto());
+            :}
+;
+ESC::= ESCENARIO ESC
+     | ESCENARIO
+;
+ESCENARIO::=  personajes heroes POSICIONES cheroes villanos POSICIONES cvillanos cpersonajes
+            | paredes POSICIONES cparedes
+            | suelo POSICIONES csuelo
+            | extras armas POSICIONES carmas bonus POSICIONES cbonus cextras
+            | meta POSICIONES cmeta
+;
+POSICIONES::= POS POSICIONES
+	    | POS 
+;
+POS::= P1
+      | P2
+      | P3
+;
+P1::= id:val0 pizq num:val1 coma num:val2 pder pcoma
+        {:     SimboloPosiciones nuevo = new SimboloPosiciones();
+               nuevo.setId(Integer.toString(key2));
+               nuevo.setNombre(val0);
+               nuevo.setposix(val1);
+               nuevo.setposiy(val2);
+               nuevo.setposfx("val1");
+               nuevo.setposfy("val2");
+               Tsimbolos2.put("1",nuevo);
+               key2++;
+               System.out.println(Tsimbolos2.get("1").getId()+Tsimbolos2.get("1").getNombre()+Tsimbolos2.get("1").getposix()+Tsimbolos2.get("1").getposiy());
+        :}
+;                  //x..x ,y//                        
+P2::= id:val0 pizq num:val1 rp num:val2 coma num:val3 pder pcoma
+{:     SimboloPosiciones nuevo = new SimboloPosiciones();
+               nuevo.setId(Integer.toString(key2));
+               nuevo.setNombre(val0);
+               nuevo.setposix(val1);
+               nuevo.setposiy(val3);
+               nuevo.setposfx(val2);
+               nuevo.setposfy("0");
+               Tsimbolos2.put("2",nuevo);
+               key2++;
+               System.out.println(Tsimbolos2.get("2").getId()+Tsimbolos2.get("2").getNombre()+Tsimbolos2.get("2").getposix()+Tsimbolos2.get("2").getposiy());
+        :} 
+;
+P3::= id:val0 pizq num:val1 coma num:val2 rp num:val3  pder pcoma 
+{:     SimboloPosiciones nuevo = new SimboloPosiciones();
+               nuevo.setId(Integer.toString(key2));
+               nuevo.setNombre(val0);
+               nuevo.setposix(val1);
+               nuevo.setposiy(val2);
+               nuevo.setposfx("0");
+               nuevo.setposfy(val3);
+               Tsimbolos2.put("3",nuevo);
+               key2++;
+               System.out.println(Tsimbolos2.get("3").getId()+Tsimbolos2.get("3").getNombre()+Tsimbolos2.get("3").getposix()+Tsimbolos2.get("3").getposiy());
+        :}
+;
+
+     	

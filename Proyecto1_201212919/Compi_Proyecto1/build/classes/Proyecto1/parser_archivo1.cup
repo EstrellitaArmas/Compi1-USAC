@@ -1,0 +1,167 @@
+package Proyecto1;
+
+import java.io.*;
+import java_cup.runtime.*;
+import java_cup.runtime.Symbol;
+import java.util.Hashtable;
+
+parser code
+{: //METODOS DEL PARSER//            
+      public static void main(String args[]) throws Exception{
+		//new parser(new analizador1(new FileInputStream(args[0]))).parse();
+		new parser(new analizador1(System.in)).parse();
+	}
+	public void syntax_error(Symbol s){
+		report_error("Error de sintaxis. Linea: " + (s.right + 1) +
+		" Columna: " + s.left + ". Texto: \"" + s.value + "\"", null);
+	}
+public static Hashtable<String,SimboloFondos> TsimbolosF=new Hashtable<String,SimboloFondos>(); 
+public static Hashtable<String,SimboloFigura> TsimbolosFI=new Hashtable<String,SimboloFigura>(); 
+public static Hashtable<String,SimboloDiseño> TsimbolosD=new Hashtable<String,SimboloDiseño>(); 
+public int keyF =1;
+public int keyFI =1;
+public int keyD =1;
+public String path="";
+public String cadena="";
+:}
+
+////SIMBOLOS TERMINALES/////////////////////////////////
+terminal     menorq, config, fondo, figura, diseno, mayorq;
+terminal     nombre,imagen, tipo, descripcion, destruir,vida,coma, pcoma, igual, llaveder, llaveizq;
+terminal     String num, id, slash,comilla,punto,ext;
+terminal      creditos;
+///SIMBOLOS NO TERMINALES////////////////////////////////
+non terminal    S,F,FI,D,P,C,D1,FI1,T,FI2,FI0,D2,D0;
+non terminal    FONDO, FIGURA, DISENO, CONFIGURACION ;
+non terminal   String PATH, CADENA;
+
+start with S;
+S::=menorq config mayorq CONFIGURACION menorq slash config mayorq 
+;
+CONFIGURACION::= FONDO FIGURA DISENO
+;
+FONDO::= menorq fondo mayorq F menorq slash fondo mayorq
+;
+F::= llaveizq nombre igual id:val1 pcoma     imagen igual PATH:val2 pcoma    llaveder coma F
+    {:  SimboloFondos nuevo = new SimboloFondos();
+        nuevo.setId(Integer.toString(keyF));
+        nuevo.setNombre(val1);
+        nuevo.setImagen(val2);
+        TsimbolosF.put("1",nuevo);
+        keyF++;
+        path="";
+        System.out.println(TsimbolosF.get("1").getId()+TsimbolosF.get("1").getNombre()+TsimbolosF.get("1").getImagen());
+    :}
+  |llaveizq nombre igual id:val1 pcoma    imagen igual PATH:val2 pcoma    llaveder    
+    {:  SimboloFondos nuevo = new SimboloFondos();
+        nuevo.setId(Integer.toString(keyF));
+        nuevo.setNombre(val1);
+        nuevo.setImagen(val2);
+        TsimbolosF.put("1",nuevo);
+        keyF++;
+        path="";
+        System.out.println(TsimbolosF.get("1").getId()+TsimbolosF.get("1").getNombre()+TsimbolosF.get("1").getImagen());
+    :}
+;
+FIGURA::=menorq figura mayorq FI menorq slash figura mayorq               
+;
+FI::= FI0 coma FI
+    | FI0
+;
+FI0::= FI1
+    | FI2
+;
+FI1::= llaveizq nombre igual id:val1 pcoma    vida igual num:val3 pcoma     imagen igual PATH:val2 pcoma  tipo igual id:val4 pcoma destruir igual num:val5 pcoma descripcion igual CADENA:val6 pcoma  llaveder
+    {:  SimboloFigura nuevo = new SimboloFigura();
+        nuevo.setId(Integer.toString(keyFI));
+        nuevo.setNombre(val1);
+        nuevo.setImagen(val2);
+        nuevo.setVida(val3);
+        nuevo.setTipo(val4);
+        nuevo.setdestruye(val5);
+        nuevo.setdescripcion(val6);
+        TsimbolosFI.put("1",nuevo);
+        keyFI++;
+        path="";
+        System.out.println(TsimbolosFI.get("1").getId()+TsimbolosFI.get("1").getNombre()+TsimbolosFI.get("1").getdescripcion());
+    :}
+;
+FI2::= llaveizq nombre igual id:val1 pcoma    vida igual num:val3 pcoma     imagen igual PATH:val2 pcoma  tipo igual id:val4 pcoma descripcion igual CADENA:val5 pcoma  llaveder 
+    {:  SimboloFigura nuevo = new SimboloFigura();
+        nuevo.setId(Integer.toString(keyFI));
+        nuevo.setNombre(val1);
+        nuevo.setImagen(val2);
+        nuevo.setVida(val3);
+        nuevo.setTipo(val4);
+        nuevo.setdestruye("0");
+        nuevo.setdescripcion(val5);
+        TsimbolosFI.put("1",nuevo);
+        keyFI++;
+        path="";
+        System.out.println(TsimbolosFI.get("1").getId()+TsimbolosFI.get("1").getNombre()+TsimbolosFI.get("1").getdescripcion());
+    :}
+;
+DISENO::=menorq diseno mayorq D menorq slash diseno mayorq
+;
+D::= D0 coma D
+    |D0
+;
+D0::= D1
+     |D2
+;
+D1::=  llaveizq nombre igual id:val1 pcoma  imagen igual PATH:val2 pcoma  tipo igual id:val3 pcoma  T igual num:val4 pcoma llaveder 
+    {:  SimboloDiseño nuevo = new SimboloDiseño();
+        nuevo.setId(Integer.toString(keyD));
+        nuevo.setNombre(val1);
+        nuevo.setImagen(val2);
+        nuevo.setpts(val4);
+        nuevo.setTipo(val3);
+        TsimbolosD.put("1",nuevo);
+        keyD++;
+        path="";
+        System.out.println(TsimbolosD.get("1").getId()+TsimbolosD.get("1").getNombre()+TsimbolosD.get("1").getpts());
+    :} 
+;
+D2::= llaveizq nombre igual id:val1 pcoma  imagen igual PATH:val2 pcoma  tipo igual id:val3 pcoma  llaveder
+ {:  SimboloDiseño nuevo = new SimboloDiseño();
+        nuevo.setId(Integer.toString(keyD));
+        nuevo.setNombre(val1);
+        nuevo.setImagen(val2);
+        nuevo.setpts("0");
+        nuevo.setTipo(val3);
+        TsimbolosD.put("1",nuevo);
+        keyD++;
+        path="";
+        System.out.println(TsimbolosD.get("1").getId()+TsimbolosD.get("1").getNombre()+TsimbolosD.get("1").getpts());
+    :}
+;
+T::=creditos 
+    |destruir
+;
+PATH::= comilla P:val5 punto:val2 ext:val3 comilla
+    {: RESULT=(val5+val2+val3);
+    :}
+;
+P::= P slash:val1 id:val2 
+    {: path=path+val1+val2;
+     RESULT=(path);
+    :}
+    |slash:val1 id:val2
+   {: path=path+val1+val2;
+     RESULT=(path);
+    :}
+;
+CADENA::= comilla:val1 C:val2 comilla:val3
+    {: RESULT=(val1+val2+val3);
+       cadena="";
+    :}
+;
+C::= C id:val1 
+    {: cadena=cadena+val1+" ";
+     RESULT=(cadena);
+    :}
+    |id:val1
+    {: cadena=cadena+val1+" ";
+     RESULT=(cadena);
+    :}
+;
